@@ -89,6 +89,31 @@ func InsertAdminApprovalData(c * gin.Context){
 		c.JSON(200,gin.H{"result":adminApproval_entry})
 	
 }
+func CoinApproval(c * gin.Context){
+	var reward models.Reward
+		//Binding the object
+		if err := c.ShouldBindJSON(&reward); err != nil {
+			c.Status(400)
+			log.Fatal("Not Able to bind the object")
+			return
+		}
+		loyaltyReward_entry:=models.Reward{SellerId: reward.SellerId,BuyerId: reward.BuyerId,Coins:0}
+		result := initializers.DB.Model(&models.Reward{}).
+        Where("seller_id = ? AND buyer_id = ?",reward.SellerId,reward.BuyerId).
+        Updates(map[string]interface{}{
+            "coins": 0,
+		})
+		if result.Error!=nil{
+			c.Status(400)
+			log.Fatal("Getting Error while fetching data from db")
+			return
+		}
+		c.JSON(200,gin.H{"insertedRecord":loyaltyReward_entry})
+		return
+
+	
+	
+}
 
 func InsertLoyaltyPointsData(c * gin.Context){
 

@@ -18,6 +18,6 @@ func main() {
 	r.POST("/addseller",handlers.InsertAdminApprovalData)
 	r.GET("/getAllProductData",handlers.GetAllProductData)
 	r.POST("/insertReward",handlers.InsertLoyaltyPointsData)
-
+	r.POST("/coinApproval",handlers.CoinApproval)
 	r.Run()
 }
