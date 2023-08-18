@@ -108,6 +108,7 @@ func InsertLoyaltyPointsData(c * gin.Context){
 				loyaltyReward_entry:=models.Reward{SellerId: reward.SellerId,BuyerId: reward.BuyerId,Coins:1,Count:1}
 				result_entry:=initializers.DB.Create(&loyaltyReward_entry)
 				c.JSON(200,gin.H{"result":result_entry})
+				return
 			}else{
 				c.Status(400)
 				log.Fatal("Error While Fetching DB Query")
@@ -118,9 +119,9 @@ func InsertLoyaltyPointsData(c * gin.Context){
 			var count int16
 			coins=existingReward.Coins*2
 			count=existingReward.Count+1
-		//loyaltyReward_entry:=models.Reward{SellerId: existingReward.SellerId,BuyerId: existingReward.BuyerId,Coins:existingReward.Coins*2,Count:existingReward.Count+1}
+		loyaltyReward_entry:=models.Reward{SellerId: existingReward.SellerId,BuyerId: existingReward.BuyerId,Coins:existingReward.Coins*2,Count:existingReward.Count+1}
 		result := initializers.DB.Model(&models.Reward{}).
-        Where("seller_id = ? AND buyer_id = ?",reward.BuyerId,reward.SellerId).
+        Where("seller_id = ? AND buyer_id = ?",reward.SellerId,reward.BuyerId).
         Updates(map[string]interface{}{
             "coins": coins,
             "count": count, // Update count column to 0 as well
@@ -134,7 +135,8 @@ func InsertLoyaltyPointsData(c * gin.Context){
 			log.Fatal("Getting Error while fetching data from db")
 			return
 		}
-		c.JSON(200,gin.H{"result":existingReward,"insertedRecord":result})
+		c.JSON(200,gin.H{"insertedRecord":loyaltyReward_entry})
+		return
 	}
 
 	
