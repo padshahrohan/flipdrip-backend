@@ -15,6 +15,7 @@ func main() {
 	r.POST("/transaction",handlers.InsertTransData)
 	r.POST("/adduser",handlers.InsertUserData)
 	r.POST("/addproduct",handlers.InsertProductData)
+	r.POST("/addseller",handlers.InsertAdminApprovalData)
 
 	r.Run()
 }

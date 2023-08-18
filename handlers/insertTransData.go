@@ -68,3 +68,22 @@ func InsertProductData(c * gin.Context){
 		c.JSON(200,gin.H{"result":product_entry})
 	
 }
+
+func InsertAdminApprovalData(c * gin.Context){
+
+	var adminApproval models.AdminApproval
+		//Binding the object
+		if err := c.ShouldBindJSON(&adminApproval); err != nil {
+			log.Fatal("Not Able to bind the object")
+			return
+		}
+		adminApproval_entry:=models.AdminApproval{SellerId: adminApproval.SellerId}
+		result_entry:=initializers.DB.Create(&adminApproval_entry)
+		if result_entry.Error!=nil{
+			c.Status(400)
+			log.Fatal("Getting Error while fetching data from db")
+			return
+		}
+		c.JSON(200,gin.H{"result":adminApproval_entry})
+	
+}
