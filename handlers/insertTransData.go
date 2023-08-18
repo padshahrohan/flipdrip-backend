@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/klipfart/initializers"
 	"github.com/klipfart/models"
+	"gorm.io/gorm"
 )
 func init(){
 	initializers.LoadEnvVariables()
@@ -85,5 +87,55 @@ func InsertAdminApprovalData(c * gin.Context){
 			return
 		}
 		c.JSON(200,gin.H{"result":adminApproval_entry})
+	
+}
+
+func InsertLoyaltyPointsData(c * gin.Context){
+
+	var reward models.Reward
+		//Binding the object
+		if err := c.ShouldBindJSON(&reward); err != nil {
+			c.Status(400)
+			log.Fatal("Not Able to bind the object")
+			return
+		}
+		var existingReward models.Reward
+
+		
+		result := initializers.DB.Model(&existingReward).Where("buyer_id = ? AND seller_id = ?", reward.BuyerId, reward.SellerId).First(&existingReward)
+		if result.Error != nil {
+			if result.Error == gorm.ErrRecordNotFound {
+				loyaltyReward_entry:=models.Reward{SellerId: reward.SellerId,BuyerId: reward.BuyerId,Coins:1,Count:1}
+				result_entry:=initializers.DB.Create(&loyaltyReward_entry)
+				c.JSON(200,gin.H{"result":result_entry})
+			}else{
+				c.Status(400)
+				log.Fatal("Error While Fetching DB Query")
+				return		
+			}
+		}else{
+			var coins int16
+			var count int16
+			coins=existingReward.Coins*2
+			count=existingReward.Count+1
+		//loyaltyReward_entry:=models.Reward{SellerId: existingReward.SellerId,BuyerId: existingReward.BuyerId,Coins:existingReward.Coins*2,Count:existingReward.Count+1}
+		result := initializers.DB.Model(&models.Reward{}).
+        Where("seller_id = ? AND buyer_id = ?",reward.BuyerId,reward.SellerId).
+        Updates(map[string]interface{}{
+            "coins": coins,
+            "count": count, // Update count column to 0 as well
+		})
+		fmt.Println(existingReward.Coins)
+		fmt.Println(existingReward.Count)
+		fmt.Println(coins)
+		fmt.Println(count)
+		if result.Error!=nil{
+			c.Status(400)
+			log.Fatal("Getting Error while fetching data from db")
+			return
+		}
+		c.JSON(200,gin.H{"result":existingReward,"insertedRecord":result})
+	}
+
 	
 }
