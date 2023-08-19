@@ -103,7 +103,7 @@ func InsertUserData(c *gin.Context) {
 		log.Fatal("Not Able to bind the object")
 		return
 	}
-	user_entry := models.Users{UserName: user.UserName, Role: user.Role, UserPassword: user.UserPassword, WalletAddress: user.WalletAddress,Name:user.Name}
+	user_entry := models.Users{UserName: user.UserName, Role: user.Role, UserPassword: user.UserPassword, WalletAddress: user.WalletAddress, Name: user.Name}
 	result_entry := initializers.DB.Create(&user_entry)
 	if result_entry.Error != nil {
 		c.Status(400)
@@ -125,6 +125,14 @@ func InsertUserData(c *gin.Context) {
 
 func InsertProductData(c *gin.Context) {
 
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+	c.Writer.Header().Set("Access-Control-Allow-Headers", "*")
+	c.Writer.Header().Set("Access-Control-Allow-Methods", "*")
+	// c.Header("Access-Control-Allow-Origin", "*")
+	// c.Header("Access-Control-Allow-Methods", "*")
+	// c.Header("Access-Control-Allow-Headers", "*")
+
 	var product models.Product
 	//Binding the object
 	if err := c.ShouldBindJSON(&product); err != nil {
@@ -140,7 +148,6 @@ func InsertProductData(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{"result": product_entry})
-
 }
 
 func InsertAdminApprovalData(c *gin.Context) {
@@ -297,8 +304,7 @@ func InsertLoyaltyPointsData(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
+
 	var user models.Users
 	//Binding the object
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -306,7 +312,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	fmt.Println(user.WalletAddress)
-	user = models.Users{UserName: user.UserName, UserPassword: user.UserPassword, WalletAddress: user.WalletAddress, Role: user.Role}
+	user = models.Users{UserName: user.UserName, UserPassword: user.UserPassword, WalletAddress: user.WalletAddress, Role: user.Role, Name: user.Name}
 	result := initializers.DB.Model(&user).Where("user_name = ? AND user_password = ? AND wallet_address LIKE ?", user.UserName, user.UserPassword, user.WalletAddress).First(&user)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
@@ -318,7 +324,7 @@ func Login(c *gin.Context) {
 			return
 		}
 	}
-	user = models.Users{UserName: user.UserName, UserPassword: user.UserPassword, WalletAddress: user.WalletAddress, Role: user.Role}
+	//user = models.Users{UserName: user.UserName, UserPassword: user.UserPassword, WalletAddress: user.WalletAddress, Role: user.Role}
 	c.JSON(200, gin.H{"result": user})
 
 }
