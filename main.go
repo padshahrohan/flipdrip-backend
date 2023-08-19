@@ -44,7 +44,7 @@ func main() {
 	r.POST("/getWalletAddress", handlers.GetWalletAddress)
 
 	//Wallet Address
-	r.PUT("/getUsersForWalletAddresses", handlers.GetUsersForWalletAddresses)
+	r.POST("/getUsersForWalletAddresses", handlers.GetUsersForWalletAddresses)
 
 	r.Run()
 }

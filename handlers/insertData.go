@@ -34,12 +34,12 @@ func InsertTransData(c *gin.Context) {
 	}
 	var existingReward models.Reward
 
-	result_entry := initializers.DB.Model(&existingReward).
+	resultEntry := initializers.DB.Model(&existingReward).
 		Where("buyer_id = ? AND seller_id = ?", body.BuyerId, body.SellerId).
 		First(&existingReward)
 
-	if result_entry.Error != nil {
-		if result_entry.Error == gorm.ErrRecordNotFound {
+	if resultEntry.Error != nil {
+		if resultEntry.Error == gorm.ErrRecordNotFound {
 			loyaltyRewardEntry := models.Reward{SellerId: body.SellerId, BuyerId: body.BuyerId, Coins: 1, Count: 1}
 			resultEntry := initializers.DB.Create(&loyaltyRewardEntry)
 			if resultEntry.Error != nil {
@@ -105,23 +105,23 @@ func InsertUserData(c *gin.Context) {
 		log.Fatal("Not Able to bind the object")
 		return
 	}
-	user_entry := models.Users{UserName: user.UserName, Role: user.Role, UserPassword: user.UserPassword, WalletAddress: user.WalletAddress,Name:user.Name}
-	result_entry := initializers.DB.Create(&user_entry)
-	if result_entry.Error != nil {
+	userEntry := models.Users{UserName: user.UserName, Role: user.Role, UserPassword: user.UserPassword, WalletAddress: user.WalletAddress,Name:user.Name}
+	resultEntry := initializers.DB.Create(&userEntry)
+	if resultEntry.Error != nil {
 		c.Status(400)
 		log.Fatal("Getting Error while fetching data from db")
 		return
 	}
 	if user.Role == "seller" {
-		adminApproval := models.AdminApproval{SellerId: int16(user_entry.ID), UserName: user.UserName}
-		resultAdminApproval_entry := initializers.DB.Create(&adminApproval)
-		if resultAdminApproval_entry.Error != nil {
+		adminApproval := models.AdminApproval{SellerId: int16(userEntry.ID), UserName: user.UserName}
+		resultAdminApprovalEntry := initializers.DB.Create(&adminApproval)
+		if resultAdminApprovalEntry.Error != nil {
 			c.Status(400)
 			log.Fatal("Getting Error while fetching data from db")
 			return
 		}
 	}
-	c.JSON(200, gin.H{"result": user_entry})
+	c.JSON(200, gin.H{"result": userEntry})
 
 }
 
@@ -141,14 +141,14 @@ func InsertProductData(c *gin.Context) {
 		return
 	}
 
-	product_entry := models.Product{ProductDescription: product.ProductDescription, ProductPrice: product.ProductPrice, SellerId: product.SellerId, Tokens: product.Tokens, ProductName: product.ProductName}
-	result_entry := initializers.DB.Create(&product_entry)
-	if result_entry.Error != nil {
+	productEntry := models.Product{ProductDescription: product.ProductDescription, ProductPrice: product.ProductPrice, SellerId: product.SellerId, Tokens: product.Tokens, ProductName: product.ProductName}
+	resultEntry := initializers.DB.Create(&productEntry)
+	if resultEntry.Error != nil {
 		c.Status(400)
 		log.Fatal("Getting Error while fetching data from db")
 		return
 	}
-	c.JSON(200, gin.H{"result": product_entry})
+	c.JSON(200, gin.H{"result": productEntry})
 
 }
 
@@ -191,23 +191,23 @@ func InsertAdminApprovalData(c *gin.Context) {
 	// }
 	// sellerid:=
 	//Inserting in AdminApproval Table
-	adminApproval_entry := models.AdminApproval{SellerId: sellerID, UserName: userName}
-	resultAdminApproval_entry := initializers.DB.Create(&adminApproval_entry)
-	if resultAdminApproval_entry.Error != nil {
+	adminApprovalEntry := models.AdminApproval{SellerId: sellerID, UserName: userName}
+	resultAdminApprovalEntry := initializers.DB.Create(&adminApprovalEntry)
+	if resultAdminApprovalEntry.Error != nil {
 		c.Status(400)
 		log.Fatal("Getting Error while fetching data from db")
 		return
 	}
 	//InsertUserData(c)
 	//Inserting in Users Table
-	user_entry := models.Users{UserName: userName, Role: role, UserPassword: userPassword, WalletAddress: walletAddress}
-	resultUser_entry := initializers.DB.Create(&user_entry)
-	if resultUser_entry.Error != nil {
+	userEntry := models.Users{UserName: userName, Role: role, UserPassword: userPassword, WalletAddress: walletAddress}
+	resultUserEntry := initializers.DB.Create(&userEntry)
+	if resultUserEntry.Error != nil {
 		c.Status(400)
 		log.Fatal("Getting Error while fetching data from db")
 		return
 	}
-	c.JSON(200, gin.H{"resultAdminApproval": adminApproval_entry, "resultUserData": "user_entry"})
+	c.JSON(200, gin.H{"resultAdminApproval": resultAdminApprovalEntry, "resultUserData": "user_entry"})
 
 }
 func CoinApproval(c *gin.Context) {
@@ -221,7 +221,7 @@ func CoinApproval(c *gin.Context) {
 		log.Fatal("Not Able to bind the object")
 		return
 	}
-	loyaltyReward_entry := models.Reward{SellerId: reward.SellerId, BuyerId: reward.BuyerId, Coins: 0}
+	loyaltyRewardEntry := models.Reward{SellerId: reward.SellerId, BuyerId: reward.BuyerId, Coins: 0}
 	result := initializers.DB.Model(&models.Reward{}).
 		Where("seller_id = ? AND buyer_id = ?", reward.SellerId, reward.BuyerId).
 		Updates(map[string]interface{}{
@@ -232,7 +232,7 @@ func CoinApproval(c *gin.Context) {
 		log.Fatal("Getting Error while fetching data from db")
 		return
 	}
-	c.JSON(200, gin.H{"insertedRecord": loyaltyReward_entry})
+	c.JSON(200, gin.H{"insertedRecord": loyaltyRewardEntry})
 	return
 
 }

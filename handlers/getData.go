@@ -92,22 +92,6 @@ func GetWalletAddress(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{"result": users})
 }
-// func GetUsersForWalletAddresses(c *gin.Context){
-// 	fmt.Println("dhgfasdufgasuyfgawdyucweafywafgewafyfcfdcy")
-// 	var users []models.Users
-// 	var input struct {
-// 		WalletAdd []string `json:"WalletAdd"`
-// 	}
-// 	if err := c.ShouldBindJSON(&input); err != nil {
-// 		c.JSON(400, gin.H{"error": "Invalid input data"})
-// 		return
-// 	}
-// 	if len(input.WalletAdd) > 0 {
-// 		initializers.DB.Where("wallet_address IN (?)", input.WalletAdd).Find(&users)
-// 	}
-// 	c.JSON(200, gin.H{"result": users})
-
-// }
 func GetUsersForWalletAddresses(c *gin.Context) {
 	var users []models.Users
 	var input struct {
