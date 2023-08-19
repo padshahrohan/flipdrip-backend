@@ -112,7 +112,7 @@ func InsertUserData(c *gin.Context) {
 		log.Fatal("Getting Error while fetching data from db")
 		return
 	}
-	if user.Role == "Seller" {
+	if user.Role == "seller" {
 		adminApproval := models.AdminApproval{SellerId: int16(user_entry.ID), UserName: user.UserName}
 		resultAdminApproval_entry := initializers.DB.Create(&adminApproval)
 		if resultAdminApproval_entry.Error != nil {

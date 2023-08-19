@@ -18,38 +18,29 @@ func main() {
 		AllowMethods: []string{"POST", "PUT", "PATCH", "DELETE"},
 		AllowHeaders: []string{"Content-Type,access-control-allow-origin,access-control-allow-headers"},
 	}))
-	r.POST("/transaction", handlers.InsertTransData)
-	//user register
+
+	//Common
 	r.POST("/user/register", handlers.InsertUserData)
-	//user login
 	r.POST("/user/login", handlers.Login)
-	//login user
-	//buyer
-	//prouduct/list
-	//product/buy
-	//product/showLoyalty
+
+	//Buyer
+	r.POST("/product/buy", handlers.InsertTransData)
 	r.GET("/product/showLoyalty", handlers.ShowLoyalty)
-	//seller
-	//user/register and add to approvalList
-	//product/add
-	//getApprovalListOfBuyers
-	//coinsApprovedForBuyers
-	//Admin
-	//getApprovalListOfSellers
-	r.GET("/admin/getApprovalListOfSellers", handlers.GetAllApprovalListOfSellers)
-	//coinsApprovedForSeller
-
-	//product Add
+	//Redeem
+	
+	//Seller
 	r.POST("/product/add", handlers.InsertProductData)
-	//Not Required
-	//r.POST("/addseller",handlers.InsertAdminApprovalData)
-	//Product List
+	r.GET("/seller/getApprovalListOfBuyers", handlers.GetAllApprovalListOfSellers)
+	r.POST("/seller/buyersTokensApproved", handlers.CoinApproval)
 	r.GET("/product/list", handlers.GetAllProductData)
-	r.POST("/insertReward", handlers.InsertLoyaltyPointsData)
-	r.POST("/coinApproval", handlers.CoinApproval)
-	r.POST("/sellerApproval", handlers.SellerApproval)
 
+	//Admin
+	r.GET("/admin/getApprovalListOfSellers", handlers.GetAllApprovalListOfSellers)
+	r.PUT("/admin/sellerTokensApproved", handlers.SellerApproval)
+
+	// r.POST("/insertReward", handlers.InsertLoyaltyPointsData)
+	
 	//Get Wallet Address
-	r.GET("/getWalletAddress", handlers.GetWalletAddress)
+	r.POST("/getWalletAddress", handlers.GetWalletAddress)
 	r.Run()
 }
