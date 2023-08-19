@@ -20,8 +20,7 @@ func init() {
 
 // }
 func GetAllProductData(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
+
 	var products []models.Product
 
 	sellerId := c.Query("SellerId") // Get the SellerId query parameter from the request
@@ -38,17 +37,18 @@ func GetAllProductData(c *gin.Context) {
 }
 
 func GetAllApprovalListOfSellers(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
-	var adminApproval []models.AdminApproval
-	initializers.DB.Find(&adminApproval)
 
+	var adminApproval []models.Users
+	//initializers.DB.Find(&adminApproval)
+	initializers.DB.
+		Model(models.Users{}).
+		Joins("INNER JOIN admin_approvals ON admin_approvals.seller_id = users.ID").
+		Find(&adminApproval)
 	c.JSON(200, gin.H{"result": adminApproval})
 
 }
 func ShowLoyalty(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
+
 	var products []models.Product
 
 	sellerId := c.Query("SellerId") // Get the SellerId query parameter from the request
@@ -114,4 +114,23 @@ func GetUsersForWalletAddresses(c *gin.Context) {
 	c.JSON(200, gin.H{"result": resultMap})
 }
 
+func GetApprovalListOfBuyers(c *gin.Context) {
 
+	type BuyerDetailsResponse struct {
+		models.Users
+		Coins int
+	}
+
+	var buyerDetails []BuyerDetailsResponse
+	sellerID := c.Query("SellerId")
+
+	initializers.DB.
+		Model(models.Users{}).
+		Select("users.*, rewards.coins AS coins").
+		Joins("INNER JOIN rewards ON rewards.buyer_id = users.ID").
+		Where("rewards.seller_id = ? AND rewards.coins > ?", sellerID, 0).
+		Find(&buyerDetails)
+
+	c.JSON(200, gin.H{"buyerDetails": buyerDetails})
+
+}

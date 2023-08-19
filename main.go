@@ -27,10 +27,10 @@ func main() {
 	r.POST("/product/buy", handlers.InsertTransData)
 	r.GET("/product/showLoyalty", handlers.ShowLoyalty)
 	//Redeem
-	
+
 	//Seller
 	r.POST("/product/add", handlers.InsertProductData)
-	r.GET("/seller/getApprovalListOfBuyers", handlers.GetAllApprovalListOfSellers)
+	r.GET("/seller/getApprovalListOfBuyers", handlers.GetApprovalListOfBuyers)
 	r.POST("/seller/buyersTokensApproved", handlers.CoinApproval)
 	r.GET("/product/list", handlers.GetAllProductData)
 
@@ -39,7 +39,7 @@ func main() {
 	r.PUT("/admin/sellerTokensApproved", handlers.SellerApproval)
 
 	// r.POST("/insertReward", handlers.InsertLoyaltyPointsData)
-	
+
 	//Get Wallet Address
 	r.POST("/getWalletAddress", handlers.GetWalletAddress)
 
