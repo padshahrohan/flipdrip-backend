@@ -15,6 +15,9 @@ func init() {
 }
 
 func SellerApproval(c * gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+    c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
+
 
 	var adminApproval models.AdminApproval
 	if err := c.ShouldBindJSON(&adminApproval); err != nil {

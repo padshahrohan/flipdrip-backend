@@ -14,6 +14,9 @@ func init(){
 	initializers.ConnectToDB()
 }
 func InsertTransData(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+    c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
+
 	var body models.Trans
 	var _ gin.H
 
@@ -34,6 +37,9 @@ func InsertTransData(c *gin.Context) {
 }
 
 func InsertUserData(c * gin.Context){
+	c.Header("Access-Control-Allow-Origin", "*")
+    c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
+
 
 	var user models.Users
 		//Binding the object
@@ -41,14 +47,14 @@ func InsertUserData(c * gin.Context){
 			log.Fatal("Not Able to bind the object")
 			return
 		}
-		user_entry:=models.Users{UserName: user.UserName,UserType:user.UserType,UserPassword:user.UserPassword,WalletAddress: user.WalletAddress}
+		user_entry:=models.Users{UserName: user.UserName,Role:user.Role,UserPassword:user.UserPassword,WalletAddress: user.WalletAddress}
 		result_entry:=initializers.DB.Create(&user_entry)
 		if result_entry.Error!=nil{
 			c.Status(400)
 			log.Fatal("Getting Error while fetching data from db")
 			return
 		}
-		if user.UserType=="Seller"{
+		if user.Role=="Seller"{
 			adminApproval:=models.AdminApproval{SellerId: int16(user_entry.ID),UserName: user.UserName}
 			resultAdminApproval_entry:=initializers.DB.Create(&adminApproval)
 			if resultAdminApproval_entry.Error!=nil{
@@ -62,6 +68,13 @@ func InsertUserData(c * gin.Context){
 }
 
 func InsertProductData(c * gin.Context){
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+	c.Writer.Header().Set("Access-Control-Allow-Headers", "*")
+	c.Writer.Header().Set("Access-Control-Allow-Methods", "*")
+	// c.Header("Access-Control-Allow-Origin", "*")
+    // c.Header("Access-Control-Allow-Methods", "*")
+	// c.Header("Access-Control-Allow-Headers", "*")
 
 	var product models.Product
 		//Binding the object
@@ -81,10 +94,13 @@ func InsertProductData(c * gin.Context){
 }
 
 func InsertAdminApprovalData(c * gin.Context){
+	c.Header("Access-Control-Allow-Origin", "*")
+    c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
+
 	var sellerID int16
     var userUsername string
     var userName string
-    var userType string
+    var role string
     var userPassword string
     var walletAddress string
 
@@ -93,7 +109,7 @@ func InsertAdminApprovalData(c * gin.Context){
         "SellerId":     &sellerID,
         "Userusername": &userUsername,
         "UserName":     &userName,
-        "UserType":     &userType,
+        "Role":     &role,
         "UserPassword": &userPassword,
         "WalletAddress": &walletAddress,
     }); err != nil {
@@ -126,7 +142,7 @@ func InsertAdminApprovalData(c * gin.Context){
 		}
 		//InsertUserData(c)
 		//Inserting in Users Table
-		user_entry:=models.Users{UserName: userName,UserType:userType,UserPassword:userPassword,WalletAddress: walletAddress}
+		user_entry:=models.Users{UserName: userName,Role:role,UserPassword:userPassword,WalletAddress: walletAddress}
 		resultUser_entry:=initializers.DB.Create(&user_entry)
 		if resultUser_entry.Error!=nil{
 			c.Status(400)
@@ -137,6 +153,9 @@ func InsertAdminApprovalData(c * gin.Context){
 	
 }
 func CoinApproval(c * gin.Context){
+	c.Header("Access-Control-Allow-Origin", "*")
+    c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
+
 	var reward models.Reward
 		//Binding the object
 		if err := c.ShouldBindJSON(&reward); err != nil {
@@ -162,67 +181,90 @@ func CoinApproval(c * gin.Context){
 	
 }
 
-func InsertLoyaltyPointsData(c * gin.Context){
+func InsertLoyaltyPointsData(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+    c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
 
 	var reward models.Reward
-		//Binding the object
-		if err := c.ShouldBindJSON(&reward); err != nil {
-			c.Status(400)
-			log.Fatal("Not Able to bind the object")
-			return
-		}
-		var existingReward models.Reward
 
-		
-		result := initializers.DB.Model(&existingReward).Where("buyer_id = ? AND seller_id = ?", reward.BuyerId, reward.SellerId).First(&existingReward)
-		if result.Error != nil {
-			if result.Error == gorm.ErrRecordNotFound {
-				loyaltyReward_entry:=models.Reward{SellerId: reward.SellerId,BuyerId: reward.BuyerId,Coins:1,Count:1}
-				result_entry:=initializers.DB.Create(&loyaltyReward_entry)
-				c.JSON(200,gin.H{"result":result_entry})
-				return
-			}else{
-				c.Status(400)
-				log.Fatal("Error While Fetching DB Query")
-				return		
-			}
-		}else{
-			var coins int16
-			var count int16
-			coins=existingReward.Coins*2
-			count=existingReward.Count+1
-		loyaltyReward_entry:=models.Reward{SellerId: existingReward.SellerId,BuyerId: existingReward.BuyerId,Coins:existingReward.Coins*2,Count:existingReward.Count+1}
-		result := initializers.DB.Model(&models.Reward{}).
-        Where("seller_id = ? AND buyer_id = ?",reward.SellerId,reward.BuyerId).
-        Updates(map[string]interface{}{
-            "coins": coins,
-            "count": count, 
-		})
-		fmt.Println(existingReward.Coins)
-		fmt.Println(existingReward.Count)
-		fmt.Println(coins)
-		fmt.Println(count)
-		if result.Error!=nil{
-			c.Status(400)
-			log.Fatal("Getting Error while fetching data from db")
-			return
-		}
-		c.JSON(200,gin.H{"insertedRecord":loyaltyReward_entry})
+	// Binding the object
+	if err := c.ShouldBindJSON(&reward); err != nil {
+		c.Status(400)
+		log.Fatal("Not Able to bind the object")
 		return
 	}
 
-	
+	var existingReward models.Reward
+
+	result := initializers.DB.Model(&existingReward).
+		Where("buyer_id = ? AND seller_id = ?", reward.BuyerId, reward.SellerId).
+		First(&existingReward)
+
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			loyaltyRewardEntry := models.Reward{SellerId: reward.SellerId, BuyerId: reward.BuyerId, Coins: 1, Count: 1}
+			resultEntry := initializers.DB.Create(&loyaltyRewardEntry)
+			c.JSON(200, gin.H{"result": resultEntry})
+			return
+		} else {
+			c.Status(400)
+			log.Fatal("Error While Fetching DB Query")
+			return
+		}
+	} else {
+		count := existingReward.Count + 1
+
+		var loyaltyPointsDtl models.LoyaltyPointsDtl
+		err := initializers.DB.
+			Where("starting_range <= ? AND ending_range >= ?", count, count).
+			First(&loyaltyPointsDtl).Error
+
+		if err != nil {
+			c.Status(400)
+			log.Fatal("Error while fetching LoyaltyPointsDtl")
+			return
+		}
+           fmt.Println(loyaltyPointsDtl.Coins)
+		coins := existingReward.Coins + loyaltyPointsDtl.Coins
+
+		loyaltyRewardEntry := models.Reward{
+			SellerId: existingReward.SellerId,
+			BuyerId:  existingReward.BuyerId,
+			Coins:    coins,
+			Count:    count,
+		}
+
+		result := initializers.DB.Model(&models.Reward{}).
+			Where("seller_id = ? AND buyer_id = ?", reward.SellerId, reward.BuyerId).
+			Updates(map[string]interface{}{
+				"coins": coins,
+				"count": count,
+			})
+
+		if result.Error != nil {
+			c.Status(400)
+			log.Fatal("Getting Error while updating data in db")
+			return
+		}
+
+		c.JSON(200, gin.H{"insertedRecord": loyaltyRewardEntry})
+		return
+	}
 }
 
+
 func Login(c *gin.Context){
+	c.Header("Access-Control-Allow-Origin", "*")
+    c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
 	var user models.Users
 		//Binding the object
 		if err := c.ShouldBindJSON(&user); err != nil {
 			log.Fatal("Not Able to bind the object")
 			return
 		}
-		user =models.Users{UserName: user.UserName,UserPassword: user.UserPassword}
-		result := initializers.DB.Model(&user).Where("user_name = ? AND user_password = ?", user.UserName, user.UserPassword).First(&user)
+		fmt.Println(user.WalletAddress)
+		user =models.Users{UserName: user.UserName,UserPassword: user.UserPassword,WalletAddress: user.WalletAddress,Role:user.Role}
+		result := initializers.DB.Model(&user).Where("user_name = ? AND user_password = ? AND wallet_address LIKE ?", user.UserName, user.UserPassword,user.WalletAddress).First(&user)
 		if result.Error != nil {
 			if result.Error == gorm.ErrRecordNotFound {
 				c.JSON(200,gin.H{"result":"Login Details Not Found"})
@@ -233,6 +275,7 @@ func Login(c *gin.Context){
 				return		
 			}
 		}
+		user =models.Users{UserName: user.UserName,UserPassword: user.UserPassword,WalletAddress: user.WalletAddress,Role:user.Role}
 		c.JSON(200,gin.H{"result":user})
 
 }

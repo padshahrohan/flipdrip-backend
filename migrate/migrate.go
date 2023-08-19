@@ -16,4 +16,5 @@ func main(){
 	initializers.DB.AutoMigrate(&models.Product{})
 	initializers.DB.AutoMigrate(&models.Users{})
 	initializers.DB.AutoMigrate(&models.AdminApproval{})
+	initializers.DB.AutoMigrate(&models.LoyaltyPointsDtl{})
 }
