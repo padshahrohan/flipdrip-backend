@@ -38,9 +38,12 @@ func GetAllProductData(c *gin.Context) {
 
 func GetAllApprovalListOfSellers(c *gin.Context) {
 
-	var adminApproval []models.AdminApproval
-	initializers.DB.Find(&adminApproval)
-
+	var adminApproval []models.Users
+	//initializers.DB.Find(&adminApproval)
+	initializers.DB.
+		Model(models.Users{}).
+		Joins("INNER JOIN admin_approvals ON admin_approvals.seller_id = users.ID").
+		Find(&adminApproval)
 	c.JSON(200, gin.H{"result": adminApproval})
 
 }
@@ -76,11 +79,23 @@ func GetWalletAddress(c *gin.Context) {
 	c.JSON(200, gin.H{"result": user})
 }
 
-func getApprovalListOfBuyers(c *gin.Context) {
-	var buyerApproval []models.Reward
+func GetApprovalListOfBuyers(c *gin.Context) {
 
-	sellerId := c.Query("SellerId")
-	initializers.DB.Where("seller_id = ? AND coins > ?", sellerId, 0).Find(&buyerApproval)
-	c.JSON(200, gin.H{"result": buyerApproval})
+	type BuyerDetailsResponse struct {
+		models.Users
+		Coins int
+	}
+
+	var buyerDetails []BuyerDetailsResponse
+	sellerID := c.Query("SellerId")
+
+	initializers.DB.
+		Model(models.Users{}).
+		Select("users.*, rewards.coins AS coins").
+		Joins("INNER JOIN rewards ON rewards.buyer_id = users.ID").
+		Where("rewards.seller_id = ? AND rewards.coins > ?", sellerID, 0).
+		Find(&buyerDetails)
+
+	c.JSON(200, gin.H{"buyerDetails": buyerDetails})
 
 }
