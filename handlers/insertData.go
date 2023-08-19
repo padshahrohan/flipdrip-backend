@@ -96,8 +96,6 @@ func InsertTransData(c *gin.Context) {
 }
 
 func InsertUserData(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
 
 	var user models.Users
 	//Binding the object
@@ -112,7 +110,7 @@ func InsertUserData(c *gin.Context) {
 		log.Fatal("Getting Error while fetching data from db")
 		return
 	}
-	if user.Role == "Seller" {
+	if user.Role == "seller" {
 		adminApproval := models.AdminApproval{SellerId: int16(user_entry.ID), UserName: user.UserName}
 		resultAdminApproval_entry := initializers.DB.Create(&adminApproval)
 		if resultAdminApproval_entry.Error != nil {
@@ -126,13 +124,6 @@ func InsertUserData(c *gin.Context) {
 }
 
 func InsertProductData(c *gin.Context) {
-	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-	c.Writer.Header().Set("Access-Control-Allow-Headers", "*")
-	c.Writer.Header().Set("Access-Control-Allow-Methods", "*")
-	// c.Header("Access-Control-Allow-Origin", "*")
-	// c.Header("Access-Control-Allow-Methods", "*")
-	// c.Header("Access-Control-Allow-Headers", "*")
 
 	var product models.Product
 	//Binding the object
@@ -153,8 +144,6 @@ func InsertProductData(c *gin.Context) {
 }
 
 func InsertAdminApprovalData(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
 
 	var sellerID int16
 	var userUsername string
@@ -211,8 +200,6 @@ func InsertAdminApprovalData(c *gin.Context) {
 
 }
 func CoinApproval(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
 
 	var reward models.Reward
 	//Binding the object

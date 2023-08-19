@@ -20,8 +20,7 @@ func init() {
 
 // }
 func GetAllProductData(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
+
 	var products []models.Product
 
 	sellerId := c.Query("SellerId") // Get the SellerId query parameter from the request
@@ -38,8 +37,7 @@ func GetAllProductData(c *gin.Context) {
 }
 
 func GetAllApprovalListOfSellers(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
+
 	var adminApproval []models.AdminApproval
 	initializers.DB.Find(&adminApproval)
 
@@ -47,8 +45,7 @@ func GetAllApprovalListOfSellers(c *gin.Context) {
 
 }
 func ShowLoyalty(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS")
+
 	var products []models.Product
 
 	sellerId := c.Query("SellerId") // Get the SellerId query parameter from the request
@@ -77,4 +74,13 @@ func GetWalletAddress(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"result": user})
+}
+
+func getApprovalListOfBuyers(c *gin.Context) {
+	var buyerApproval []models.Reward
+
+	sellerId := c.Query("SellerId")
+	initializers.DB.Where("seller_id = ? AND coins > ?", sellerId, 0).Find(&buyerApproval)
+	c.JSON(200, gin.H{"result": buyerApproval})
+
 }
