@@ -65,18 +65,53 @@ func ShowLoyalty(c *gin.Context) {
 	c.JSON(200, gin.H{"result": products})
 }
 
+// func GetWalletAddress(c *gin.Context) {
+
+// 	var user models.Users
+
+// 	id := c.Query("Id")
+
+// 	if id != "" {
+// 		// If SellerId is provided, filter products based on the sellerId
+// 		initializers.DB.Where("id= ?", id).Find(&user)
+// 	}
+
+// 	c.JSON(200, gin.H{"result": user})
+// }
 func GetWalletAddress(c *gin.Context) {
-
-	var user models.Users
-
-	id := c.Query("Id")
-
-	if id != "" {
-		// If SellerId is provided, filter products based on the sellerId
-		initializers.DB.Where("id= ?", id).Find(&user)
+	var users []models.Users
+	var input struct {
+		Ids []string `json:"ids"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid input data"})
+		return
+	}
+	if len(input.Ids) > 0 {
+		initializers.DB.Where("id IN (?)", input.Ids).Find(&users)
+	}
+	c.JSON(200, gin.H{"result": users})
+}
+func GetUsersForWalletAddresses(c *gin.Context) {
+	var users []models.Users
+	var input struct {
+		WalletAdd []string `json:"WalletAdd"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid input data"})
+		return
+	}
+	if len(input.WalletAdd) > 0 {
+		initializers.DB.Where("wallet_address IN (?)", input.WalletAdd).Find(&users)
 	}
 
-	c.JSON(200, gin.H{"result": user})
+	// Create a map to store the result
+	resultMap := make(map[string]string)
+	for _, user := range users {
+		resultMap[user.WalletAddress] = user.Name
+	}
+
+	c.JSON(200, gin.H{"result": resultMap})
 }
 
 func GetApprovalListOfBuyers(c *gin.Context) {

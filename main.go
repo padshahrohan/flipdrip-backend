@@ -42,5 +42,9 @@ func main() {
 
 	//Get Wallet Address
 	r.POST("/getWalletAddress", handlers.GetWalletAddress)
+
+	//Wallet Address
+	r.POST("/getUsersForWalletAddresses", handlers.GetUsersForWalletAddresses)
+
 	r.Run()
 }
