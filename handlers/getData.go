@@ -19,3 +19,11 @@ func GetAllProductData(c * gin.Context){
 
 
 }
+func GetAllApprovalListOfSellers(c * gin.Context){
+	var adminApproval []models.AdminApproval
+	initializers.DB.Find(&adminApproval)
+
+	c.JSON(200,gin.H{"result":adminApproval})
+
+
+}
