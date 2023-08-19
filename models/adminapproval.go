@@ -5,4 +5,5 @@ import "gorm.io/gorm"
 type AdminApproval struct {
 	gorm.Model
 	SellerId int16
+	UserName string
 }
