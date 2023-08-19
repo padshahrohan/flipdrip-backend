@@ -105,7 +105,7 @@ func InsertUserData(c *gin.Context) {
 		log.Fatal("Not Able to bind the object")
 		return
 	}
-	user_entry := models.Users{UserName: user.UserName, Role: user.Role, UserPassword: user.UserPassword, WalletAddress: user.WalletAddress}
+	user_entry := models.Users{UserName: user.UserName, Role: user.Role, UserPassword: user.UserPassword, WalletAddress: user.WalletAddress,Name:user.Name}
 	result_entry := initializers.DB.Create(&user_entry)
 	if result_entry.Error != nil {
 		c.Status(400)
