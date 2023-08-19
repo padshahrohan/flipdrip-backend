@@ -103,21 +103,15 @@ func InsertUserData(c *gin.Context) {
 		log.Fatal("Not Able to bind the object")
 		return
 	}
-<<<<<<< HEAD
 	user_entry := models.Users{UserName: user.UserName, Role: user.Role, UserPassword: user.UserPassword, WalletAddress: user.WalletAddress, Name: user.Name}
 	result_entry := initializers.DB.Create(&user_entry)
 	if result_entry.Error != nil {
-=======
-	userEntry := models.Users{UserName: user.UserName, Role: user.Role, UserPassword: user.UserPassword, WalletAddress: user.WalletAddress,Name:user.Name}
-	resultEntry := initializers.DB.Create(&userEntry)
-	if resultEntry.Error != nil {
->>>>>>> 5b62d1602e589f8059bfd3ea5da8dd231a405c80
 		c.Status(400)
 		log.Fatal("Getting Error while fetching data from db")
 		return
 	}
 	if user.Role == "seller" {
-		adminApproval := models.AdminApproval{SellerId: int16(userEntry.ID), UserName: user.UserName}
+		adminApproval := models.AdminApproval{SellerId: int16(user_entry.ID), UserName: user.UserName}
 		resultAdminApprovalEntry := initializers.DB.Create(&adminApproval)
 		if resultAdminApprovalEntry.Error != nil {
 			c.Status(400)
@@ -125,16 +119,16 @@ func InsertUserData(c *gin.Context) {
 			return
 		}
 	}
-	c.JSON(200, gin.H{"result": userEntry})
+	c.JSON(200, gin.H{"result": user_entry})
 
 }
 
 func InsertProductData(c *gin.Context) {
 
-	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-	c.Writer.Header().Set("Access-Control-Allow-Headers", "*")
-	c.Writer.Header().Set("Access-Control-Allow-Methods", "*")
+	// c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+	// c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+	// c.Writer.Header().Set("Access-Control-Allow-Headers", "*")
+	// c.Writer.Header().Set("Access-Control-Allow-Methods", "*")
 	// c.Header("Access-Control-Allow-Origin", "*")
 	// c.Header("Access-Control-Allow-Methods", "*")
 	// c.Header("Access-Control-Allow-Headers", "*")
@@ -146,19 +140,14 @@ func InsertProductData(c *gin.Context) {
 		return
 	}
 
-	productEntry := models.Product{ProductDescription: product.ProductDescription, ProductPrice: product.ProductPrice, SellerId: product.SellerId, Tokens: product.Tokens, ProductName: product.ProductName}
-	resultEntry := initializers.DB.Create(&productEntry)
+	product_entry := models.Product{ProductDescription: product.ProductDescription, ProductPrice: product.ProductPrice, SellerId: product.SellerId, Tokens: product.Tokens, ProductName: product.ProductName}
+	resultEntry := initializers.DB.Create(&product_entry)
 	if resultEntry.Error != nil {
 		c.Status(400)
 		log.Fatal("Getting Error while fetching data from db")
 		return
 	}
-<<<<<<< HEAD
 	c.JSON(200, gin.H{"result": product_entry})
-=======
-	c.JSON(200, gin.H{"result": productEntry})
-
->>>>>>> 5b62d1602e589f8059bfd3ea5da8dd231a405c80
 }
 
 func InsertAdminApprovalData(c *gin.Context) {
@@ -226,7 +215,7 @@ func CoinApproval(c *gin.Context) {
 		log.Fatal("Not Able to bind the object")
 		return
 	}
-	loyaltyRewardEntry := models.Reward{SellerId: reward.SellerId, BuyerId: reward.BuyerId, Coins: 0}
+	//loyaltyRewardEntry := models.Reward{SellerId: reward.SellerId, BuyerId: reward.BuyerId, Coins: 0}
 	result := initializers.DB.Model(&models.Reward{}).
 		Where("seller_id = ? AND buyer_id = ?", reward.SellerId, reward.BuyerId).
 		Updates(map[string]interface{}{
@@ -237,7 +226,7 @@ func CoinApproval(c *gin.Context) {
 		log.Fatal("Getting Error while fetching data from db")
 		return
 	}
-	c.JSON(200, gin.H{"insertedRecord": loyaltyRewardEntry})
+	c.JSON(200, gin.H{"insertedRecord": "Coins Redemeed Successfully"})
 	return
 
 }
@@ -281,7 +270,7 @@ func InsertLoyaltyPointsData(c *gin.Context) {
 			Where("starting_range <= ? AND ending_range >= ?", count, count).
 			First(&loyaltyPointsDtl)
 
-		if err != nil {
+		if err.Error != nil {
 			c.Status(400)
 			log.Fatal("Error while fetching LoyaltyPointsDtl")
 			return

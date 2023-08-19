@@ -10,7 +10,7 @@ func init() {
 	initializers.ConnectToDB()
 }
 
-func main(){
+func main() {
 	initializers.DB.AutoMigrate(&models.Trans{})
 	initializers.DB.AutoMigrate(&models.Reward{})
 	initializers.DB.AutoMigrate(&models.Product{})

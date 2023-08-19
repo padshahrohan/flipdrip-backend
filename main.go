@@ -20,31 +20,31 @@ func main() {
 	}))
 
 	//Common
-	r.POST("/user/register", handlers.InsertUserData)
-	r.POST("/user/login", handlers.Login)
+	r.POST("/user/register", handlers.InsertUserData) //checked
+	r.POST("/user/login", handlers.Login)             //checked
 
 	//Buyer
-	r.POST("/product/buy", handlers.InsertTransData)
+	r.POST("/product/buy", handlers.InsertTransData) //Checked
 	r.GET("/product/showLoyalty", handlers.ShowLoyalty)
 	//Redeem
 
 	//Seller
-	r.POST("/product/add", handlers.InsertProductData)
-	r.GET("/seller/getApprovalListOfBuyers", handlers.GetApprovalListOfBuyers)
-	r.POST("/seller/buyersTokensApproved", handlers.CoinApproval)
-	r.GET("/product/list", handlers.GetAllProductData)
+	r.POST("/product/add", handlers.InsertProductData)                         //checked
+	r.GET("/seller/getApprovalListOfBuyers", handlers.GetApprovalListOfBuyers) //checked
+	r.POST("/seller/buyersTokensApproved", handlers.CoinApproval)              //checked -> response to be finalised
+	r.GET("/product/list", handlers.GetAllProductData)                         //checked
 
 	//Admin
-	r.GET("/admin/getApprovalListOfSellers", handlers.GetAllApprovalListOfSellers)
-	r.PUT("/admin/sellerTokensApproved", handlers.SellerApproval)
+	r.GET("/admin/getApprovalListOfSellers", handlers.GetAllApprovalListOfSellers) //Checked
+	r.PUT("/admin/sellerTokensApproved", handlers.SellerApproval)                  //Checked
 
-	// r.POST("/insertReward", handlers.InsertLoyaltyPointsData)
+	r.POST("/insertReward", handlers.InsertLoyaltyPointsData)
 
 	//Get Wallet Address
 	r.POST("/getWalletAddress", handlers.GetWalletAddress)
 
 	//Wallet Address
-	r.POST("/getUsersForWalletAddresses", handlers.GetUsersForWalletAddresses)
+	r.PUT("/getUsersForWalletAddresses", handlers.GetUsersForWalletAddresses) //checked
 
 	r.Run()
 }
