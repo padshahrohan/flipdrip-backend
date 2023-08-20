@@ -60,7 +60,7 @@ func InsertTransData(c *gin.Context) {
 			Where("starting_range <= ? AND ending_range >= ?", count, count).
 			First(&loyaltyPointsDtl)
 
-		if err != nil {
+		if err.Error != nil {
 			c.Status(400)
 			log.Fatal("Error while fetching LoyaltyPointsDtl")
 			return

@@ -25,7 +25,7 @@ func main() {
 
 	//Buyer
 	r.POST("/product/buy", handlers.InsertTransData) //Checked
-	r.GET("/product/showLoyalty", handlers.ShowLoyalty)
+	r.GET("/product/getLoyalty", handlers.ShowLoyalty)
 	//Redeem
 
 	//Seller
@@ -41,10 +41,10 @@ func main() {
 	r.POST("/insertReward", handlers.InsertLoyaltyPointsData)
 
 	//Get Wallet Address
-	r.POST("/getWalletAddress", handlers.GetWalletAddress)
+	r.GET("/user/getWalletAddress", handlers.GetWalletAddress)
 
 	//Wallet Address
-	r.PUT("/getUsersForWalletAddresses", handlers.GetUsersForWalletAddresses) //checked
+	r.PUT("/user/getUserNamesForWalletAddresses", handlers.GetUsersForWalletAddresses) //checked
 
 	r.Run()
 }

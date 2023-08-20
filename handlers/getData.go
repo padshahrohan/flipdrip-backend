@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/klipfart/initializers"
 	"github.com/klipfart/models"
@@ -49,20 +51,41 @@ func GetAllApprovalListOfSellers(c *gin.Context) {
 }
 func ShowLoyalty(c *gin.Context) {
 
-	var products []models.Product
+	//var products []models.Product
 
 	sellerId := c.Query("SellerId") // Get the SellerId query parameter from the request
 	buyerId := c.Query("BuyerId")
 
-	if sellerId != "" {
-		// If SellerId is provided, filter products based on the sellerId
-		initializers.DB.Where("seller_id = ? AND buyer_id = ?", sellerId, buyerId).Find(&products)
-	} else {
-		// If no SellerId is provided, fetch all products
-		initializers.DB.Where("buyer_id = ?", buyerId).Find(&products)
-	}
+	//Search the enntry from the rewards table and get the count do count +1
+	//Search the value you got in algo table and return the reward
 
-	c.JSON(200, gin.H{"result": products})
+	// if sellerId != "" {
+	// 	// If SellerId is provided, filter products based on the sellerId
+	// 	initializers.DB.Where("seller_id = ? AND buyer_id = ?", sellerId, buyerId).Find(&products)
+	// } else {
+	// 	// If no SellerId is provided, fetch all products
+	// 	initializers.DB.Where("buyer_id = ?", buyerId).Find(&products)
+	// }
+
+	// c.JSON(200, gin.H{"result": products})
+
+	var currentProductCount models.Reward
+	initializers.DB.Model(&currentProductCount).Where("seller_id = ? AND buyer_id = ?", sellerId, buyerId).Find(&currentProductCount)
+	count := currentProductCount.Count
+	count += 1
+
+	var loyaltyPointsDtl models.LoyaltyPointsDtl
+	err := initializers.DB.Model(&loyaltyPointsDtl).
+		Where("starting_range <= ? AND ending_range >= ?", count, count).
+		First(&loyaltyPointsDtl)
+
+	if err.Error != nil {
+		c.Status(400)
+		return
+	}
+	fmt.Println(loyaltyPointsDtl.Coins)
+	c.JSON(200, gin.H{"result": loyaltyPointsDtl.Coins})
+
 }
 
 // func GetWalletAddress(c *gin.Context) {
@@ -76,21 +99,25 @@ func ShowLoyalty(c *gin.Context) {
 // 		initializers.DB.Where("id= ?", id).Find(&user)
 // 	}
 
-// 	c.JSON(200, gin.H{"result": user})
-// }
+//		c.JSON(200, gin.H{"result": user})
+//	}
 func GetWalletAddress(c *gin.Context) {
-	var users []models.Users
-	var input struct {
-		Ids []string `json:"ids"`
-	}
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid input data"})
-		return
-	}
-	if len(input.Ids) > 0 {
-		initializers.DB.Where("id IN (?)", input.Ids).Find(&users)
-	}
-	c.JSON(200, gin.H{"result": users})
+	sellerID := c.Query("Id")
+	var users models.Users
+
+	initializers.DB.Model(&users).Where("id = ? ", sellerID).Find(&users)
+	// var users []models.Users
+	// var input struct {
+	// 	Ids []string `json:"ids"`
+	// }
+	// if err := c.ShouldBindJSON(&input); err != nil {
+	// 	c.JSON(400, gin.H{"error": "Invalid input data"})
+	// 	return
+	// }
+	// if len(input.Ids) > 0 {
+	// 	initializers.DB.Where("id IN (?)", input.Ids).Find(&users)
+	// }
+	c.JSON(200, gin.H{"result": users.WalletAddress})
 }
 func GetUsersForWalletAddresses(c *gin.Context) {
 	var users []models.Users
