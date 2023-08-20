@@ -46,5 +46,9 @@ func main() {
 	//Wallet Address
 	r.PUT("/user/getUserNamesForWalletAddresses", handlers.GetUsersForWalletAddresses) //checked
 
+	//Transactions
+	r.POST("/user/addTransaction", handlers.InsertWalletTransactionData)
+	r.GET("/user/transactionList", handlers.GetAllWalletTransactions)
+
 	r.Run()
 }

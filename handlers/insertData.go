@@ -328,3 +328,21 @@ func Login(c *gin.Context) {
 	c.JSON(200, gin.H{"result": user})
 
 }
+func InsertWalletTransactionData(c *gin.Context) {
+
+	var wallet models.WalletTransactionData
+	//Binding the object
+	if err := c.ShouldBindJSON(&wallet); err != nil {
+		log.Fatal("Not Able to bind the object")
+		return
+	}
+
+	resultEntry := initializers.DB.Create(&wallet)
+	if resultEntry.Error != nil {
+		c.Status(400)
+		log.Fatal("Getting Error while fetching data from db")
+		return
+	}
+	c.JSON(200, gin.H{"result": wallet})
+
+}

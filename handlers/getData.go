@@ -45,6 +45,7 @@ func GetAllApprovalListOfSellers(c *gin.Context) {
 	initializers.DB.
 		Model(models.Users{}).
 		Joins("INNER JOIN admin_approvals ON admin_approvals.seller_id = users.ID").
+		Where("admin_approvals.deleted_at IS NULL").
 		Find(&adminApproval)
 	c.JSON(200, gin.H{"result": adminApproval})
 
@@ -158,6 +159,32 @@ func GetApprovalListOfBuyers(c *gin.Context) {
 		Where("rewards.seller_id = ? AND rewards.coins > ?", sellerID, 0).
 		Find(&buyerDetails)
 
-	c.JSON(200, gin.H{"buyerDetails": buyerDetails})
+	c.JSON(200, gin.H{"result": buyerDetails})
+
+}
+
+func GetAllWalletTransactions(c *gin.Context) {
+	userID := c.Query("Id") // Your provided user ID
+
+	type Ans struct {
+		ToName   string
+		FromName string
+		Coins    int16
+	}
+	var transactions []Ans
+
+	result := initializers.DB.Table("wallet_transaction_data as w").
+		Select("uf.name AS from_name, ut.name AS to_name,w.coins").
+		Joins("JOIN users AS uf ON w.from_wallet_address = uf.wallet_address").
+		Joins("JOIN users AS ut ON w.to_wallet_address = ut.wallet_address").
+		Where("uf.id = ? OR ut.id = ?", userID, userID).
+		Find(&transactions)
+
+	if result.Error != nil {
+		c.JSON(500, gin.H{"error": "Internal Server Error"})
+		return
+	}
+
+	c.JSON(200, gin.H{"result": transactions})
 
 }
